@@ -1,0 +1,32 @@
+
+var mediaUrl = _.compose(_.prop('m'), _.prop('media'));
+var srcs = _.compose(_.map(mediaUrl), _.prop('items'));
+var images = _.compose(_.map(img), srcs);
+
+/*
+  The above is equivilant to the code below
+  Using map's composition law:
+
+      compose( map(f), map(g) ) === map( compose(f, g))
+
+   We can eliminate the srcs function and include the process in images()
+*/
+var mediaUrl = _.compose(_.prop('m'), _.prop('media'))
+var images = _.compose( _.map(img), _.map(mediaUrl), _.prop('items') )
+
+/*
+  Since srcs() is being called in images() we can use currying and the compose
+  function to eliminate the entire srcs() function. Now images() does what srcs()
+  once did, by passing more than two arguments to the compose() function, it
+  curries the last argument?
+*/
+
+// Now we can break it down a little more by extracting:
+// _.compose(img, mediaUrl) and making its own function.
+var images = _.compose(_.map(_.compose(img, mediaUrl)), _.prop('items'));
+
+// So the above becomes this:
+
+var mediaUrl = _.compose( _.prop('m'), _.prop('media') )
+var mediaToImg = _.compose( img, mediaUrl )
+var images = _.compose( _.map( mediaToImg ), _.prop('items') )
